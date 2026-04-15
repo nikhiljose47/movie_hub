@@ -14,26 +14,30 @@ class UserListScreen extends StatelessWidget {
     final repo = sl<UserRepository>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Users")),
-
-      body: PaginatedListView<User>(
-        fetchPage: (page) => repo.getUsers(page),
-        itemBuilder: (user) {
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(user.avatar),
-            ),
-            title: Text('${user.firstName} ${user.lastName}'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const MovieListScreen(),
-                ),
-              );
-            },
-          );
-        },
+      appBar: AppBar(title: const Text("Exciting people !!"), centerTitle: true, backgroundColor: const Color.fromARGB(82, 230, 230, 230),),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 22.0),
+        child: PaginatedListView<User>(
+          fetchPage: (page) => repo.getUsers(page),
+          itemBuilder: (user) {
+            return ListTile(
+              dense: false,
+              minTileHeight: 80,
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(user.avatar),
+              ),
+              title: Text('${user.firstName} ${user.lastName}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MovieListScreen(userId: user.id.toString(),),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
 
       floatingActionButton: FloatingActionButton(

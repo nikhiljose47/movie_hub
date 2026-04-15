@@ -23,6 +23,10 @@ class Movie {
     );
   }
 
-  String get posterUrl =>
-      'https://image.tmdb.org/t/p/w185$posterPath';
+  String get posterUrl {
+    if (posterPath.isEmpty) {
+      return '';
+    }
+    return 'https://image.tmdb.org/t/p/w185$posterPath';
+  }
 }

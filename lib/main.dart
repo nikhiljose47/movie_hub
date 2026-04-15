@@ -36,12 +36,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: Scaffold(
-        appBar: AppBar(title: const Text("Movie Hub")),
+        appBar: AppBar(
+          title: const Text(
+            "Movie Hub",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.amber[200],
+        ),
         body: const UserListScreen(),
       ),
     );

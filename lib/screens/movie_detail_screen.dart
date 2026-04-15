@@ -48,7 +48,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(movie!.title)),
+      appBar: AppBar(title: Text('Movie: ${movie!.title}')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

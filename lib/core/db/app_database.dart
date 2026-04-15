@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:movie_hub/core/db/bookmarks_table.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -9,7 +10,7 @@ import 'users_table.dart';
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [UsersTable],
+  tables: [UsersTable, BookmarksTable],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

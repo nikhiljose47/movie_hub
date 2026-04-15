@@ -6,7 +6,6 @@ const String syncTask = "syncTask";
 
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    // IMPORTANT: re-init dependencies
     await setupLocator();
 
     final syncManager = sl<SyncManager>();
