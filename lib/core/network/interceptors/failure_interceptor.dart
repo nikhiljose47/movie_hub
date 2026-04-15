@@ -12,7 +12,7 @@ class FailureInterceptor extends Interceptor {
     if (enabled &&
         options.method == 'GET' &&
         //Fail 20-30% of requests randomly
-        _random.nextInt(10) < 2) {
+        _random.nextInt(10) < 1.5) {
       return handler.reject(
         DioException(
           requestOptions: options,

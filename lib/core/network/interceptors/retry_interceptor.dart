@@ -11,16 +11,12 @@ class RetryInterceptor extends Interceptor {
     final request = err.requestOptions;
 
     int retries = request.extra['retries'] ?? 0;
-
-    // ❌ Don't retry client errors (400–499)
     if (err.response?.statusCode != null) {
       final status = err.response!.statusCode!;
       if (status >= 400 && status < 500) {
         return handler.next(err);
       }
     }
-
-    // ✅ Retry only network-related issues
     if (err.type != DioExceptionType.connectionError &&
         err.type != DioExceptionType.receiveTimeout) {
       return handler.next(err);

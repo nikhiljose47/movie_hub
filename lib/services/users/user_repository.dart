@@ -2,7 +2,6 @@ import 'package:movie_hub/core/db/app_database.dart';
 import 'package:movie_hub/models/user.dart';
 import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
-
 import '../../services/users/user_api_service.dart';
 
 class UserRepository {
@@ -16,54 +15,62 @@ class UserRepository {
 
   Future<List<User>> getUsers(int page) async {
     final remote = await api.fetchUsers(page);
-
     final local = await db.getAllUsers();
 
-    final localUsers = local
-        .map((e) => User(id: 0, firstName: e.name, lastName: '', avatar: ''))
-        .toList();
-
-    return [...localUsers, ...remote];
+    return [
+      ...local.map((e) => User(
+            id: e.id,
+            firstName: e.name,
+            lastName: '',
+            avatar: '',
+          )),
+      ...remote,
+    ];
   }
 
-  Future<void> addUser({required String name, required String job}) async {
-    final localId = _uuid.v4();
-    await db
-        .into(db.usersTable)
-        .insert(
-          UsersTableCompanion.insert(localId: localId, name: name, job: job),
+  Future<void> addUser({
+    required String name,
+    required String job,
+  }) async {
+    final id = _uuid.v4();
+
+    await db.into(db.usersTable).insert(
+          UsersTableCompanion.insert(
+            id: id,
+            name: name,
+            job: job,
+          ),
         );
 
-        
-    await syncUsers();
+    syncUsers();
   }
 
   Future<void> syncUsers() async {
-    if (!isSyncing) {
-      isSyncing = true;
-      final unsyncedUsers = await (db.select(
-        db.usersTable,
-      )..where((u) => u.isSynced.equals(false))).get();
+    if (isSyncing) return;
+    isSyncing = true;
 
-      for (final user in unsyncedUsers) {
-        try {
-          final res = await api.createUser(name: user.name, job: user.job);
+    final users = await (db.select(db.usersTable)
+          ..where((u) => u.isSynced.equals(false)))
+        .get();
 
-          if (res != null) {
-            await (db.update(
-              db.usersTable,
-            )..where((u) => u.localId.equals(user.localId))).write(
-              UsersTableCompanion(
-                serverId: Value(res.createdId),
-                isSynced: const Value(true),
-              ),
-            );
-          }
-        } catch (e) {
-          break; // stop → retry later
-        }
+    for (final u in users) {
+      final res = await api.createUser(
+        //id: u.id,
+        name: u.name,
+        job: u.job,
+      );
+
+      if (res != null) {
+        await (db.update(db.usersTable)
+              ..where((x) => x.id.equals(u.id)))
+            .write(const UsersTableCompanion(
+              isSynced: Value(true),
+            ));
+      } else {
+        break;
       }
-      isSyncing = false;
     }
+
+    isSyncing = false;
   }
 }

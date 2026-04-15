@@ -9,12 +9,10 @@ class $UsersTableTable extends UsersTable
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $UsersTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _localIdMeta = const VerificationMeta(
-    'localId',
-  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<String> localId = GeneratedColumn<String>(
-    'local_id',
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -37,17 +35,6 @@ class $UsersTableTable extends UsersTable
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _serverIdMeta = const VerificationMeta(
-    'serverId',
-  );
-  @override
-  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
-    'server_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
   );
   static const VerificationMeta _isSyncedMeta = const VerificationMeta(
     'isSynced',
@@ -77,14 +64,7 @@ class $UsersTableTable extends UsersTable
     defaultValue: currentDateAndTime,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    localId,
-    name,
-    job,
-    serverId,
-    isSynced,
-    createdAt,
-  ];
+  List<GeneratedColumn> get $columns => [id, name, job, isSynced, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -97,13 +77,10 @@ class $UsersTableTable extends UsersTable
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('local_id')) {
-      context.handle(
-        _localIdMeta,
-        localId.isAcceptableOrUnknown(data['local_id']!, _localIdMeta),
-      );
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
-      context.missing(_localIdMeta);
+      context.missing(_idMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -121,12 +98,6 @@ class $UsersTableTable extends UsersTable
     } else if (isInserting) {
       context.missing(_jobMeta);
     }
-    if (data.containsKey('server_id')) {
-      context.handle(
-        _serverIdMeta,
-        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
-      );
-    }
     if (data.containsKey('is_synced')) {
       context.handle(
         _isSyncedMeta,
@@ -143,14 +114,14 @@ class $UsersTableTable extends UsersTable
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {localId};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   UsersTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return UsersTableData(
-      localId: attachedDatabase.typeMapping.read(
+      id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}local_id'],
+        data['${effectivePrefix}id'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -160,10 +131,6 @@ class $UsersTableTable extends UsersTable
         DriftSqlType.string,
         data['${effectivePrefix}job'],
       )!,
-      serverId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}server_id'],
-      ),
       isSynced: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_synced'],
@@ -182,29 +149,24 @@ class $UsersTableTable extends UsersTable
 }
 
 class UsersTableData extends DataClass implements Insertable<UsersTableData> {
-  final String localId;
+  final String id;
   final String name;
   final String job;
-  final String? serverId;
   final bool isSynced;
   final DateTime createdAt;
   const UsersTableData({
-    required this.localId,
+    required this.id,
     required this.name,
     required this.job,
-    this.serverId,
     required this.isSynced,
     required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['local_id'] = Variable<String>(localId);
+    map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     map['job'] = Variable<String>(job);
-    if (!nullToAbsent || serverId != null) {
-      map['server_id'] = Variable<String>(serverId);
-    }
     map['is_synced'] = Variable<bool>(isSynced);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -212,12 +174,9 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
 
   UsersTableCompanion toCompanion(bool nullToAbsent) {
     return UsersTableCompanion(
-      localId: Value(localId),
+      id: Value(id),
       name: Value(name),
       job: Value(job),
-      serverId: serverId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(serverId),
       isSynced: Value(isSynced),
       createdAt: Value(createdAt),
     );
@@ -229,10 +188,9 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UsersTableData(
-      localId: serializer.fromJson<String>(json['localId']),
+      id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       job: serializer.fromJson<String>(json['job']),
-      serverId: serializer.fromJson<String?>(json['serverId']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -241,36 +199,32 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'localId': serializer.toJson<String>(localId),
+      'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'job': serializer.toJson<String>(job),
-      'serverId': serializer.toJson<String?>(serverId),
       'isSynced': serializer.toJson<bool>(isSynced),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   UsersTableData copyWith({
-    String? localId,
+    String? id,
     String? name,
     String? job,
-    Value<String?> serverId = const Value.absent(),
     bool? isSynced,
     DateTime? createdAt,
   }) => UsersTableData(
-    localId: localId ?? this.localId,
+    id: id ?? this.id,
     name: name ?? this.name,
     job: job ?? this.job,
-    serverId: serverId.present ? serverId.value : this.serverId,
     isSynced: isSynced ?? this.isSynced,
     createdAt: createdAt ?? this.createdAt,
   );
   UsersTableData copyWithCompanion(UsersTableCompanion data) {
     return UsersTableData(
-      localId: data.localId.present ? data.localId.value : this.localId,
+      id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       job: data.job.present ? data.job.value : this.job,
-      serverId: data.serverId.present ? data.serverId.value : this.serverId,
       isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
@@ -279,10 +233,9 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   @override
   String toString() {
     return (StringBuffer('UsersTableData(')
-          ..write('localId: $localId, ')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('job: $job, ')
-          ..write('serverId: $serverId, ')
           ..write('isSynced: $isSynced, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -290,62 +243,55 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(localId, name, job, serverId, isSynced, createdAt);
+  int get hashCode => Object.hash(id, name, job, isSynced, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is UsersTableData &&
-          other.localId == this.localId &&
+          other.id == this.id &&
           other.name == this.name &&
           other.job == this.job &&
-          other.serverId == this.serverId &&
           other.isSynced == this.isSynced &&
           other.createdAt == this.createdAt);
 }
 
 class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
-  final Value<String> localId;
+  final Value<String> id;
   final Value<String> name;
   final Value<String> job;
-  final Value<String?> serverId;
   final Value<bool> isSynced;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const UsersTableCompanion({
-    this.localId = const Value.absent(),
+    this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.job = const Value.absent(),
-    this.serverId = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersTableCompanion.insert({
-    required String localId,
+    required String id,
     required String name,
     required String job,
-    this.serverId = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : localId = Value(localId),
+  }) : id = Value(id),
        name = Value(name),
        job = Value(job);
   static Insertable<UsersTableData> custom({
-    Expression<String>? localId,
+    Expression<String>? id,
     Expression<String>? name,
     Expression<String>? job,
-    Expression<String>? serverId,
     Expression<bool>? isSynced,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (localId != null) 'local_id': localId,
+      if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (job != null) 'job': job,
-      if (serverId != null) 'server_id': serverId,
       if (isSynced != null) 'is_synced': isSynced,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -353,19 +299,17 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   }
 
   UsersTableCompanion copyWith({
-    Value<String>? localId,
+    Value<String>? id,
     Value<String>? name,
     Value<String>? job,
-    Value<String?>? serverId,
     Value<bool>? isSynced,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return UsersTableCompanion(
-      localId: localId ?? this.localId,
+      id: id ?? this.id,
       name: name ?? this.name,
       job: job ?? this.job,
-      serverId: serverId ?? this.serverId,
       isSynced: isSynced ?? this.isSynced,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -375,17 +319,14 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (localId.present) {
-      map['local_id'] = Variable<String>(localId.value);
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
     if (job.present) {
       map['job'] = Variable<String>(job.value);
-    }
-    if (serverId.present) {
-      map['server_id'] = Variable<String>(serverId.value);
     }
     if (isSynced.present) {
       map['is_synced'] = Variable<bool>(isSynced.value);
@@ -402,10 +343,9 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   @override
   String toString() {
     return (StringBuffer('UsersTableCompanion(')
-          ..write('localId: $localId, ')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('job: $job, ')
-          ..write('serverId: $serverId, ')
           ..write('isSynced: $isSynced, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -901,20 +841,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $$UsersTableTableCreateCompanionBuilder =
     UsersTableCompanion Function({
-      required String localId,
+      required String id,
       required String name,
       required String job,
-      Value<String?> serverId,
       Value<bool> isSynced,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
 typedef $$UsersTableTableUpdateCompanionBuilder =
     UsersTableCompanion Function({
-      Value<String> localId,
+      Value<String> id,
       Value<String> name,
       Value<String> job,
-      Value<String?> serverId,
       Value<bool> isSynced,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -929,8 +867,8 @@ class $$UsersTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get localId => $composableBuilder(
-    column: $table.localId,
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -941,11 +879,6 @@ class $$UsersTableTableFilterComposer
 
   ColumnFilters<String> get job => $composableBuilder(
     column: $table.job,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get serverId => $composableBuilder(
-    column: $table.serverId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -969,8 +902,8 @@ class $$UsersTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get localId => $composableBuilder(
-    column: $table.localId,
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -981,11 +914,6 @@ class $$UsersTableTableOrderingComposer
 
   ColumnOrderings<String> get job => $composableBuilder(
     column: $table.job,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get serverId => $composableBuilder(
-    column: $table.serverId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1009,17 +937,14 @@ class $$UsersTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get localId =>
-      $composableBuilder(column: $table.localId, builder: (column) => column);
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
   GeneratedColumn<String> get job =>
       $composableBuilder(column: $table.job, builder: (column) => column);
-
-  GeneratedColumn<String> get serverId =>
-      $composableBuilder(column: $table.serverId, builder: (column) => column);
 
   GeneratedColumn<bool> get isSynced =>
       $composableBuilder(column: $table.isSynced, builder: (column) => column);
@@ -1059,36 +984,32 @@ class $$UsersTableTableTableManager
               $$UsersTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> localId = const Value.absent(),
+                Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> job = const Value.absent(),
-                Value<String?> serverId = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersTableCompanion(
-                localId: localId,
+                id: id,
                 name: name,
                 job: job,
-                serverId: serverId,
                 isSynced: isSynced,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String localId,
+                required String id,
                 required String name,
                 required String job,
-                Value<String?> serverId = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersTableCompanion.insert(
-                localId: localId,
+                id: id,
                 name: name,
                 job: job,
-                serverId: serverId,
                 isSynced: isSynced,
                 createdAt: createdAt,
                 rowid: rowid,

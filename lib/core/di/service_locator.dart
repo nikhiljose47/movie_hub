@@ -46,6 +46,6 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<ConnectivityService>(() => ConnectivityService());
 
   sl.registerLazySingleton<BookmarkRepository>(
-  () => BookmarkRepository(sl<AppDatabase>()),
-);
+    () => BookmarkRepository(sl<AppDatabase>()),
+  );
 }

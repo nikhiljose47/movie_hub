@@ -71,9 +71,7 @@ class _MovieTileState extends State<_MovieTile> {
             : const Icon(Icons.image),
         title: Text(widget.movie.title),
         trailing: IconButton(
-          icon: Icon(
-            isSaved ? Icons.bookmark : Icons.bookmark_border,
-          ),
+          icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {
             setState(() => isSaved = !isSaved);
 
@@ -89,8 +87,7 @@ class _MovieTileState extends State<_MovieTile> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  MovieDetailScreen(movieId: widget.movie.id),
+              builder: (_) => MovieDetailScreen(movieId: widget.movie.id),
             ),
           );
         },

@@ -24,12 +24,15 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
     setState(() => loading = true);
     await repo.addUser(name: name, job: job);
+
     if (!mounted) return;
+
     setState(() => loading = false);
 
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Saved locally. Syncing...')));
+
     Navigator.pop(context);
   }
 
@@ -37,25 +40,47 @@ class _AddUserScreenState extends State<AddUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add User')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Name'),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.person_add, size: 60),
+                const SizedBox(height: 20),
+
+                TextField(
+                  controller: nameCtrl,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    hintText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: jobCtrl,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    hintText: 'Job',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: loading ? null : submit,
+                    child: Text(loading ? 'Creating...' : 'Create'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: jobCtrl,
-              decoration: const InputDecoration(labelText: 'Job'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: loading ? null : submit,
-              child: Text(loading ? 'Creating...' : 'Create'),
-            ),
-          ],
+          ),
         ),
       ),
     );
