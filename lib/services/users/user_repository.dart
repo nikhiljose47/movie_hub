@@ -33,6 +33,8 @@ class UserRepository {
         .insert(
           UsersTableCompanion.insert(localId: localId, name: name, job: job),
         );
+
+        
     await syncUsers();
   }
 

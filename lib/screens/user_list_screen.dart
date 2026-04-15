@@ -13,6 +13,7 @@ class UserListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final repo = sl<UserRepository>();
 
+
     return Scaffold(
       appBar: AppBar(title: const Text("Exciting people !!"), centerTitle: true, backgroundColor: const Color.fromARGB(82, 230, 230, 230),),
       body: Padding(
@@ -34,6 +35,7 @@ class UserListScreen extends StatelessWidget {
                     builder: (_) => MovieListScreen(userId: user.id.toString(),),
                   ),
                 );
+                (context as Element).markNeedsBuild();
               },
             );
           },

@@ -26,7 +26,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   Future<void> load() async {
     final res = await movieService.fetchMovieDetail(widget.movieId);
-
     setState(() {
       movie = res;
       loading = false;
@@ -43,62 +42,49 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
     if (movie == null) {
       return const Scaffold(
-        body: Center(child: Text("Failed to load movie")),
+        body: Center(child: Text("Failed to load")),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Movie: ${movie!.title}')),
+      appBar: AppBar(title: Text(movie!.title)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🔹 Poster
             Image.network(
               movie!.posterUrl,
               width: double.infinity,
-              height: 300,
+              height: 280,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  const SizedBox(height: 300, child: Icon(Icons.image)),
             ),
-
-            const SizedBox(height: 16),
-
-            /// 🔹 Title
+            const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 movie!.title,
                 style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-
-            const SizedBox(height: 8),
-
-            /// 🔹 Release Date
+            const SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Release: ${movie!.releaseDate}",
+                movie!.releaseDate,
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            /// 🔹 Description
+            const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 movie!.overview,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 14),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),

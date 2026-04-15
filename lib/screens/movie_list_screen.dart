@@ -13,70 +13,85 @@ class MovieListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repo = sl<BookmarkRepository>();
-
     return Scaffold(
       appBar: AppBar(title: const Text("Movies")),
-
       body: PaginatedListView<Movie>(
         fetchPage: sl<MovieService>().fetchMovies,
         itemBuilder: (movie) {
-          return FutureBuilder<bool>(
-            future: repo.isBookmarked(userId, movie.id),
-            builder: (context, snapshot) {
-              final isSaved = snapshot.data ?? false;
+          return _MovieTile(movie: movie, userId: userId);
+        },
+      ),
+    );
+  }
+}
 
-              return Container(
-                margin: const EdgeInsets.only(left: 12, right: 1, bottom: 10, top: 6),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(137, 250, 250, 250),
-                  borderRadius: BorderRadius.circular(16),
+class _MovieTile extends StatefulWidget {
+  final Movie movie;
+  final String userId;
 
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+  const _MovieTile({required this.movie, required this.userId});
+
+  @override
+  State<_MovieTile> createState() => _MovieTileState();
+}
+
+class _MovieTileState extends State<_MovieTile> {
+  final repo = sl<BookmarkRepository>();
+  bool isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  Future<void> load() async {
+    final res = await repo.isBookmarked(widget.userId, widget.movie.id);
+    setState(() => isSaved = res);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ListTile(
+        leading: widget.movie.posterUrl.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  widget.movie.posterUrl,
+                  width: 60,
+                  fit: BoxFit.cover,
                 ),
-                child: ListTile(
-                  title: Text(movie.title),
-                  minVerticalPadding: 8,
-                  leading: movie.posterUrl.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
+              )
+            : const Icon(Icons.image),
+        title: Text(widget.movie.title),
+        trailing: IconButton(
+          icon: Icon(
+            isSaved ? Icons.bookmark : Icons.bookmark_border,
+          ),
+          onPressed: () async {
+            setState(() => isSaved = !isSaved);
 
-                          child: Image.network(
-                            movie.posterUrl,
-                            width: 60,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const Icon(Icons.image),
-                          ),
-                        )
-                      : const Icon(Icons.image),
-                  trailing: IconButton(
-                    icon: Icon(
-                      isSaved ? Icons.bookmark : Icons.bookmark_border,
-                    ),
-                    onPressed: () async {
-                      await repo.toggleBookmark(
-                        userId: userId,
-                        movieId: movie.id,
-                        title: movie.title,
-                        poster: movie.posterUrl,
-                      );
-
-                      (context as Element).markNeedsBuild();
-                    },
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MovieDetailScreen(movieId: movie.id),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
+            await repo.toggleBookmark(
+              userId: widget.userId,
+              movieId: widget.movie.id,
+              title: widget.movie.title,
+              poster: widget.movie.posterUrl,
+            );
+          },
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  MovieDetailScreen(movieId: widget.movie.id),
+            ),
           );
         },
       ),
