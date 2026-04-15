@@ -52,45 +52,77 @@ class _MovieTileState extends State<_MovieTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: ListTile(
-        leading: widget.movie.posterUrl.isNotEmpty
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  widget.movie.posterUrl,
-                  width: 60,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : const Icon(Icons.image),
-        title: Text(widget.movie.title),
-        trailing: IconButton(
-          icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () async {
-            setState(() => isSaved = !isSaved);
+    final m = widget.movie;
 
-            await repo.toggleBookmark(
-              userId: widget.userId,
-              movieId: widget.movie.id,
-              title: widget.movie.title,
-              poster: widget.movie.posterUrl,
-            );
-          },
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => MovieDetailScreen(movieId: widget.movie.id),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => MovieDetailScreen(movieId: m.id)),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: m.posterUrl.isNotEmpty
+                  ? Image.network(
+                      m.posterUrl,
+                      width: 70,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      width: 70,
+                      height: 90,
+                      color: Colors.grey.shade300,
+                      child: const Icon(Icons.movie),
+                    ),
             ),
-          );
-        },
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    m.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  Text(
+                    m.releaseDate,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+
+            IconButton(
+              icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
+              onPressed: () async {
+                setState(() => isSaved = !isSaved);
+
+                await repo.toggleBookmark(
+                  userId: widget.userId,
+                  movieId: m.id,
+                  title: m.title,
+                  poster: m.posterUrl,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
