@@ -3,10 +3,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectivityService {
   final _connectivity = Connectivity();
-
   final _controller = StreamController<bool>.broadcast();
 
   Stream<bool> get onStatusChange => _controller.stream;
+
 
   ConnectivityService() {
     _init();
@@ -14,14 +14,14 @@ class ConnectivityService {
 
   void _init() {
     _connectivity.onConnectivityChanged.listen((result) {
-      final isOnline = result != ConnectivityResult.none;
+      final isOnline = !result.contains(ConnectivityResult.none);
       _controller.add(isOnline);
     });
   }
 
-  Future<bool> checkNow() async {
+  Future<bool> isOnline() async {
     final result = await _connectivity.checkConnectivity();
-    return result != ConnectivityResult.none;
+    return !result.contains(ConnectivityResult.none);
   }
 
   void dispose() {

@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 
 class BookmarksTable extends Table {
-  TextColumn get id => text()(); // UUID
+  TextColumn get id => text()(); 
 
-  TextColumn get userLocalId => text()(); // FK (user)
+  TextColumn get userLocalId => text()();
 
   IntColumn get movieId => integer()();
 

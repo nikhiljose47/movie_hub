@@ -3,7 +3,6 @@ import 'package:movie_hub/config/api_config.dart';
 import 'package:movie_hub/core/db/app_database.dart';
 import 'package:movie_hub/core/network/dio_client.dart';
 import 'package:movie_hub/core/services/connectivity_service.dart';
-import 'package:movie_hub/core/services/sync_manager.dart';
 import 'package:movie_hub/services/movies/bookmark_repository.dart';
 import 'package:movie_hub/services/movies/movie_service.dart';
 import 'package:movie_hub/services/users/user_repository.dart';
@@ -45,10 +44,6 @@ Future<void> setupLocator() async {
   );
 
   sl.registerLazySingleton<ConnectivityService>(() => ConnectivityService());
-
-  sl.registerLazySingleton<SyncManager>(
-    () => SyncManager(sl<UserRepository>()),
-  );
 
   sl.registerLazySingleton<BookmarkRepository>(
   () => BookmarkRepository(sl<AppDatabase>()),

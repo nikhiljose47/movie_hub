@@ -1,33 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:movie_hub/core/di/service_locator.dart';
 import 'package:movie_hub/core/services/connectivity_service.dart';
-import 'package:movie_hub/core/services/sync_manager.dart';
-import 'package:movie_hub/core/services/workmanager_service.dart';
 import 'package:movie_hub/screens/user_list_screen.dart';
+import 'package:movie_hub/services/users/user_repository.dart';
 import 'package:workmanager/workmanager.dart';
+
+const String syncTask = "syncTask";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeApp();
+  runApp(const MyApp());
+}
 
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    await setupLocator();
+    final userRepo = sl<UserRepository>();
+
+    if (task == syncTask) {
+      await userRepo.syncUsers();
+    }
+    return Future.value(true);
+  });
+}
+
+Future<void>   initializeApp() async {
   await setupLocator();
-  Workmanager().initialize(callbackDispatcher);
 
+  final userRepo = sl<UserRepository>();
+  final connectivity = sl<ConnectivityService>();
+
+  Workmanager().initialize(callbackDispatcher);
   Workmanager().registerPeriodicTask(
-    "sync-task-id",
+    "user-sync",
     syncTask,
     frequency: const Duration(minutes: 15),
   );
 
-  final connectivity = sl<ConnectivityService>();
-  final syncManager = sl<SyncManager>();
   connectivity.onStatusChange.listen((isOnline) async {
     if (isOnline) {
-      print('Internet back...');
-      await syncManager.syncIfNeeded();
+      print('Internet back. Attempting sync...');
+      await userRepo.syncUsers();
     }
   });
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
