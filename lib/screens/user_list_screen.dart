@@ -3,7 +3,7 @@ import 'package:movie_hub/core/di/service_locator.dart';
 import 'package:movie_hub/models/user.dart';
 import 'package:movie_hub/screens/add_user_screen.dart';
 import 'package:movie_hub/screens/movie_list_screen.dart';
-import 'package:movie_hub/services/users/user_service.dart';
+import 'package:movie_hub/services/users/user_repository.dart';
 import 'package:movie_hub/widgets/paginated_listview.dart';
 
 class UserListScreen extends StatelessWidget {
@@ -11,13 +11,13 @@ class UserListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userService = sl<UserService>();
+    final repo = sl<UserRepository>();
 
     return Scaffold(
       appBar: AppBar(title: const Text("Users")),
 
       body: PaginatedListView<User>(
-        fetchPage: userService.fetchUsers,
+        fetchPage: (page) => repo.getUsers(page),
         itemBuilder: (user) {
           return ListTile(
             leading: CircleAvatar(
@@ -36,7 +36,6 @@ class UserListScreen extends StatelessWidget {
         },
       ),
 
-      // ✅ ADD USER BUTTON
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

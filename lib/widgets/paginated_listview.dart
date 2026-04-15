@@ -11,13 +11,15 @@ class PaginatedListView<T> extends StatefulWidget {
   });
 
   @override
-  State<PaginatedListView<T>> createState() => _PaginatedListViewState<T>();
+  State<PaginatedListView<T>> createState() =>
+      _PaginatedListViewState<T>();
 }
 
 class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
-  final ScrollController _controller = ScrollController();
+  final controller = ScrollController();
 
-  List<T> items = [];
+  final List<T> items = [];
+
   int page = 1;
   bool isLoading = false;
   bool hasMore = true;
@@ -27,18 +29,16 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
     super.initState();
     _fetch();
 
-    _controller.addListener(() {
-      if (_controller.position.pixels >=
-              _controller.position.maxScrollExtent - 200 &&
-          !isLoading &&
-          hasMore) {
+    controller.addListener(() {
+      if (controller.position.pixels >
+          controller.position.maxScrollExtent - 200) {
         _fetch();
       }
     });
   }
 
   Future<void> _fetch() async {
-    if (isLoading) return;
+    if (isLoading || !hasMore) return;
 
     setState(() => isLoading = true);
 
@@ -46,20 +46,26 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
       final newItems = await widget.fetchPage(page);
 
       setState(() {
-        page++;
+        if (newItems.isEmpty || newItems.length < 10) {
+          hasMore = false;
+        }
+
         items.addAll(newItems);
-        if (newItems.isEmpty) hasMore = false;
+        page++;
       });
-    } catch (e) {
-    } finally {
+    } catch (_) {} finally {
       setState(() => isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty && isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return ListView.builder(
-      controller: _controller,
+      controller: controller,
       itemCount: items.length + 1,
       itemBuilder: (context, index) {
         if (index < items.length) {
@@ -69,7 +75,7 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
         if (!hasMore) {
           return const Padding(
             padding: EdgeInsets.all(16),
-            child: Center(child: Text("End of data")),
+            child: Center(child: Text("No more data")),
           );
         }
 
@@ -79,5 +85,11 @@ class _PaginatedListViewState<T> extends State<PaginatedListView<T>> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:movie_hub/core/di/service_locator.dart';
-import 'package:movie_hub/services/users/user_service.dart';
+import 'package:movie_hub/services/users/user_api_service.dart';
+import 'package:movie_hub/services/users/user_repository.dart';
 
 class AddUserScreen extends StatefulWidget {
   const AddUserScreen({super.key});
@@ -13,7 +14,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _nameCtrl = TextEditingController();
   final _jobCtrl = TextEditingController();
 
-  final userService = sl<UserService>();
+  final userService = sl<UserApiService>();
 
   bool loading = false;
 
@@ -24,11 +25,10 @@ class _AddUserScreenState extends State<AddUserScreen> {
     if (name.isEmpty || job.isEmpty) return;
 
     setState(() => loading = true);
-
-    final res = await userService.createUser(
-      name: name,
-      job: job,
-    );
+    //Storing in Db and Remote then syncing with server
+    final repo = sl<UserRepository>();
+    await repo.addUser(name: name, job: job);
+    final res = await userService.createUser(name: name, job: job);
 
     setState(() => loading = false);
 
@@ -36,14 +36,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
       if (mounted) {
         Navigator.pop(context);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User created')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('User created')));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to create user')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to create user')));
     }
   }
 

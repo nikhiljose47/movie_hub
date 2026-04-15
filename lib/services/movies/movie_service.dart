@@ -17,7 +17,6 @@ class MovieService {
 
       return results.map((e) => Movie.fromJson(e)).toList();
     } catch (e) {
-      print('❌ MovieService.fetchMovies error: $e');
       return [];
     }
   }
@@ -28,7 +27,6 @@ class MovieService {
 
       return Movie.fromJson(response.data);
     } catch (e) {
-      print('❌ fetchMovieDetail error: $e');
       return null;
     }
   }
